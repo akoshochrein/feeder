@@ -1,36 +1,25 @@
 {
-  "name": "electron-quick-start",
+  "name": "feeder",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "RSS feed reader",
   "main": "main.js",
   "scripts": {
-    "start": "electron main.js"
+    "start": "./node_modules/electron-prebuilt/dist/Electron.app/Contents/MacOS/Electron . && watchify app/src/main.jsx -v -t [ babelify --presets [ react ] ] -o app/js/main.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/atom/electron-quick-start.git"
+    "url": "git+https://github.com/akoskaaa/feeder.git"
   },
-  "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial"
-  ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
-  "bugs": {
-    "url": "https://github.com/atom/electron-quick-start/issues"
-  },
-  "homepage": "https://github.com/atom/electron-quick-start#readme",
-  "devDependencies": {
+  "author": "hoch.akos@gmail.com",
+  "license": "MIT",
+  "homepage": "https://github.com/akoskaaa/feeder",
+  "dependencies": {
     "electron-prebuilt": "^0.36.0",
-    "react": "^0.14.2",
-    "react-dom": "^0.14.2",
-    "webpack-dev-server": "^1.9.0"
-  },
-  "scripts": {
-    "start": "./node_modules/electron-prebuilt/dist/Electron.app/Contents/MacOS/Electron .",
-    "watch": "./node_modules/.bin/webpack-dev-server",
-    "electron-rebuild": "./node_modules/.bin/electron-rebuild"
+    "babel": "^6.3.26",
+    "babel-preset-react": "^6.3.13",
+    "babelify": "^7.2.0",
+    "react": "^0.14.6",
+    "react-dom": "^0.14.6",
+    "watchify": "^3.7.0"
   }
 }
