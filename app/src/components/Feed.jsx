@@ -9,9 +9,13 @@ var Feed = React.createClass({
     render: function () {
         var self = this;
         return (
-            <ul>
-                {this.props.feedItems.map(self.createFeedItem)}
-            </ul>
+            <div>
+                <h2>{this.props.title}</h2>
+                <h3>{this.props.url}</h3>
+                <ul>
+                    {this.props.feedItems.map(self.createFeedItem)}
+                </ul>
+            </div>
         );
     }
 });

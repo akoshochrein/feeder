@@ -1,9 +1,8 @@
 var React = require('react'),
     ReactDOM = require('react-dom');
-    FeedManager = require('./components/FeedManager.jsx');
+    RSSListManager = require('./components/RSSListManager.jsx');
 
 ReactDOM.render(
-    <FeedManager />,
-    // <div>aaa</div>,
+    <RSSListManager />,
     document.getElementById('content')
 );
