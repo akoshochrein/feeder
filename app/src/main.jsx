@@ -1,4 +1,9 @@
 var React = require('react'),
     ReactDOM = require('react-dom');
+    FeedManager = require('./components/FeedManager.jsx');
 
-ReactDOM.render(<h3>Hello Feeders</h3>, document.getElementById('content'));
+ReactDOM.render(
+    <FeedManager />,
+    // <div>aaa</div>,
+    document.getElementById('content')
+);
