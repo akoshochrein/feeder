@@ -4,7 +4,7 @@ var FeedItem = React.createClass({
     render: function () {
         return (
             <li>
-                <h3>{this.props.feedItem.title}</h3>
+                <a target="_blank" href={this.props.feedItem.url}><h4>{this.props.feedItem.title}</h4></a>
             </li>
         );
     }

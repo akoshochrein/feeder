@@ -1,17 +1,18 @@
 var React = require('react'),
     RSSList = require('./RSSList.jsx'),
     RSSAdder = require('./RSSAdder.jsx'),
-    $ = require('jquery');
+    $ = require('jquery'),
+    xml2js = require('xml2js');
 
 var RSSListManager = React.createClass({
     getInitialState: function () {
         return {
             rssItems: [
-                {
-                    'title': 'test',
-                    'url': 'http://www.google.com',
-                    'feedItems': [{title: 'Test1'}, {title: 'Test2'}]
-                }
+                // {
+                //     'title': 'test',
+                //     'url': 'http://www.google.com',
+                //     'feedItems': [{title: 'Test1'}, {title: 'Test2'}]
+                // }
             ],
             currentUrl: ''
         };
@@ -24,9 +25,38 @@ var RSSListManager = React.createClass({
 
     addRSS: function (e) {
         e.preventDefault();
-        var currentRSSItems = this.state.rssItems;
-        currentRSSItems.push({title: this.state.currentUrl});
-        this.setState({rssItems: currentRSSItems, currentUrl: ''});
+        var currentRSSItems = this.state.rssItems,
+        self = this;
+
+        $.ajax({
+            url: this.state.currentUrl
+        }).complete(function (response) {
+            xml2js.parseString(response.responseText, function (error, result) {
+                stuff = result
+                var rssChannel = result.rss.channel[0],
+                    rssTitle = rssChannel.title[0],
+                    rssUrl = rssChannel.link[0],
+                    rssItems = rssChannel.item;
+
+                currentRSSItems.push({
+                    'title': rssTitle,
+                    'url': rssUrl,
+                    'feedItems': rssItems.map(function (item) {
+                        return {
+                            'title': item.title[0],
+                            'url': item.link[0]
+                        }
+                    })
+                });
+
+                self.setState({
+                    rssItems: currentRSSItems,
+                    currentUrl: ''
+                });
+            });
+        });
+
+
     },
 
     render: function () {

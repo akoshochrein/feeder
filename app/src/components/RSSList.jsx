@@ -4,7 +4,7 @@ var React = require('react'),
 
 var RSSList = React.createClass({
     createRSS: function (feed, index) {
-        return <RSS feed={feed} index={feed.title + index} />
+        return <RSS feed={feed} key={feed.title + index} />
     },
 
     render: function () {
