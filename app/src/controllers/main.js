@@ -1,7 +1,8 @@
 var $ = require('jquery'),
-    xml2js = require('xml2js'),
+    xml2json = require('simple-xml2json'),
     ReactDOM = require('react-dom'),
-    RSSListManagerFactory = require('../components/RSSListManager.jsx');
+    RSSListManagerFactory = require('../components/RSSListManager.jsx'),
+    bacon = require('baconjs');
 
 
 var RSSController = (function () {
@@ -9,54 +10,74 @@ var RSSController = (function () {
         factory = RSSListManagerFactory;
 
     function init () {
+        // TODO init state from localstorage
+
+
         changeState({
-            'rssItems': []
+            'rssItems': [] // TODO maybe refactor to an object with hashes of urls
         });
     }
 
     function changeState (newState) {
         state = $.extend(state, newState);
+
         ReactDOM.render(
             factory({
                 'rssItems': state.rssItems,
-                'addRSS': createRSSFromUrl,
-                'urlChange': urlChange
+                'addRSS': createOrUpdateRSSFromUrl
             }),
             document.getElementById('content')
         );
     }
 
-    function urlChange (e) {
-        e.preventDefault();
-        changeState({currentUrl: e.target.value});
+    function createOrUpdateRSSFromUrl (url) {
+        var currentRSSItems = state.rssItems,
+            urls = currentRSSItems.map(function (rssItem) {
+                return rssItem.url;
+            });
+
+        if (urls.indexOf(url) === -1) {
+            createRSSFromUrl(url);
+        } else {
+            updateRSSFromUrl(url);
+        }
     }
 
-    function createRSSFromUrl () {
-        $.ajax({
-            url: state.currentUrl
-        }).complete(function (response) {
-            xml2js.parseString(response.responseText, function (error, result) {
-                var rssChannel = result.rss.channel[0],
-                    rssTitle = rssChannel.title[0],
-                    rssUrl = rssChannel.link[0],
-                    rssItems = rssChannel.item,
-                    currentRSSItems = state.rssItems;
+    function updateRSSFromUrl (url) {
+        // TODO
+    }
 
-                currentRSSItems.push({
-                    'title': rssTitle,
-                    'url': rssUrl,
-                    'feedItems': rssItems.map(function (item) {
-                        return {
-                            'title': item.title[0],
-                            'url': item.link[0]
-                        }
-                    })
-                });
+    function createRSSFromUrl (url) {
+        var responseStream = bacon.fromPromise($.ajax({
+            method: 'get',
+            url: url
+        }));
 
-                changeState({
-                    rssItems: currentRSSItems,
-                    currentUrl: ''
-                });
+        // xml2js alternatives that are not async
+        var newRssItemStream = responseStream.map(function (response) {
+            var result = xml2json.parser(new XMLSerializer().serializeToString(response)),
+                rssChannel = result.rss.channel,
+                rssTitle = rssChannel.title,
+                rssUrl = rssChannel.link,
+                rssItems = rssChannel.item;
+
+            return {
+                'title': rssTitle,
+                'url': rssUrl,
+                'feedItems': rssItems.map(function (item) {
+                    return {
+                        'title': item.title,
+                        'url': item.link
+                    }
+                })
+            }
+        });
+
+        newRssItemStream.onValue(function (newRssItem) {
+            var currentRSSItems = state.rssItems;
+            currentRSSItems.push(newRssItem);
+            changeState({
+                rssItems: currentRSSItems
             });
         });
     }
